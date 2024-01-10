@@ -1,4 +1,8 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
 {% for thread in threads %}
   <h2><a href="{% url 'thread_detail' thread.id %}">{{ thread.title }}</a></h2>
   <p>{{ thread.content }}</p>
 {% endfor %}
+{% endblock %}
