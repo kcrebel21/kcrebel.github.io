@@ -4,6 +4,7 @@ from .views import UserProfileViewSet
 from rest_framework.routers import DefaultRouter
 from django.conf.urls.static import static
 from .views import user_logout
+from .views import delete_thread
 
 from django.contrib.auth import views as auth_views
 
@@ -24,6 +25,7 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('comment/<int:comment_id>/edit/', views.edit_comment, name='edit_comment'),
     path('comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
+    path('thread/<int:thread_id>/delete/', delete_thread, name='delete_thread'),
     
 ]
 

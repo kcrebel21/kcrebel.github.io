@@ -108,6 +108,16 @@ def delete_comment(request, comment_id):
 
     return render(request, 'forum/delete_comment.html', {'comment': comment})
 
+def delete_thread(request, thread_id):
+    thread = get_object_or_404(Thread, id=thread_id, user=request.user)
+
+    if request.method == 'POST' and request.POST.get('confirmation') == 'true':
+        thread.delete()
+        messages.success(request, 'Thread deleted successfully.')
+        return redirect('thread_list')
+
+    return render(request, 'forum/delete_thread.html', {'thread': thread})
+
 
 
 def new_thread(request):

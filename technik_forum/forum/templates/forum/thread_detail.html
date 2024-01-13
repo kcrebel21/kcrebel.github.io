@@ -4,6 +4,11 @@
 <h2>{{ thread.title }}</h2>
 <p>{{ thread.content }}</p>
 
+{% if user.is_authenticated and user == thread.user %}
+    <!-- Display the "Delete Thread" button for the thread owner -->
+    <a href="{% url 'delete_thread' thread_id=thread.id %}">Delete Thread</a>
+{% endif %}
+
 <h3>Comments</h3>
 
 
