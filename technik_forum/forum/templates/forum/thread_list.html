@@ -1,8 +1,14 @@
 {% extends 'base_generic.html' %}
 
 {% block content %}
-{% for thread in threads %}
-  <h2><a href="{% url 'thread_detail' thread.id %}">{{ thread.title }}</a></h2>
-  <p>{{ thread.content }}</p>
-{% endfor %}
+  <h2>Thread List</h2>
+  
+  {% for thread in threads %}
+    <div>
+      <a href="{% url 'thread_detail' thread.id %}">
+        <p><strong>{{ thread.title }}</strong>| {{ thread.user }} - (Created on: {{ thread.created_at }})</p>
+      </a>
+      <p>{{ thread.content }}</p>
+    </div>
+  {% endfor %}
 {% endblock %}

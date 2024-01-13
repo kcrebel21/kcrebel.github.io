@@ -11,16 +11,52 @@ from .forms import UserProfileForm
 from allauth.account.views import LoginView, SignupView
 from django.contrib.auth import logout
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import logout
+from .forms import SignUpForm, LoginForm
+from django.contrib.auth import login, authenticate
+from rest_framework import viewsets
+from django.contrib.auth.decorators import login_required
+
+from .serializers import UserProfileSerializer
+from .models import UserProfile
+from django.shortcuts import get_object_or_404 
+
 def home(request):
     if request.user.is_authenticated:
         logout(request)
     return render(request, 'home.html')
 
-class CustomLoginView(LoginView):
-    template_name = 'login.html'
+def user_logout(request):
+    logout(request)
+    return redirect('home')
 
-class CustomSignupView(SignupView):
-    template_name = 'signup.html'
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            UserProfile.objects.create(user=user)  # UserProfile für den Benutzer erstellen
+            login(request, user)
+            return redirect('home')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request, request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
 
 
 def thread_list(request):
@@ -64,24 +100,35 @@ def edit_comment(request, comment_id):
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id, user=request.user)
     thread_id = comment.thread.id
-    comment.delete()
-    messages.success(request, 'Comment deleted successfully.')
-    return redirect('thread_detail', thread_id=thread_id)
+
+    if request.method == 'POST' and request.POST.get('confirmation') == 'true':
+        comment.delete()
+        messages.success(request, 'Comment deleted successfully.')
+        return redirect('thread_detail', thread_id=thread_id)
+
+    return render(request, 'forum/delete_comment.html', {'comment': comment})
+
+
 
 def new_thread(request):
     if request.method == 'POST':
         form = ThreadForm(request.POST)
         if form.is_valid():
-            thread = form.save()
+            thread = form.save(commit=False)
+            thread.user = request.user  # Setze den Benutzer des Threads auf den aktuellen Benutzer
+            thread.save()
             return redirect('thread_detail', thread_id=thread.id)
     else:
         form = ThreadForm()
 
-    return render(request, 'forum/new_thread.html', {'form': form})
+    return render(request, 'forum/new_thread.html', {'form': form, 'thread': None})
 
 @login_required
 def user_profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    # Abrufen der vom Benutzer veröffentlichten Threads
+    user_threads = Thread.objects.filter(user=request.user)
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=user_profile)
@@ -91,4 +138,11 @@ def user_profile(request):
     else:
         form = UserProfileForm(instance=user_profile)
 
-    return render(request, 'user_profile.html', {'form': form})
+    # Hinzufügen von Name, E-Mail-Adresse und Threads zum Kontext
+    user_info = {
+        'name': request.user.get_full_name(),
+        'email': request.user.email,
+        'threads': user_threads,
+    }
+
+    return render(request, 'user_profile.html', {'form': form, 'user_info': user_info})

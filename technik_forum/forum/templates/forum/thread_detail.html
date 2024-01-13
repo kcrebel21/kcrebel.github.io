@@ -6,10 +6,16 @@
 
 <h3>Comments</h3>
 
+
 {% for comment in comments %}
   <div>
-    <p><strong>{{ comment.user.username }}</strong> - {{ comment.created_at }}</p>
+    <p><strong>{{ comment.user }}</strong> - {{ comment.created_at }}</p>
     <p>{{ comment.content }}</p>
+    
+    {% if user.is_authenticated and comment.user == user %}
+      <a href="{% url 'edit_comment' comment.id %}">Edit</a>
+      <a href="{% url 'delete_comment' comment.id %}">Delete</a>
+    {% endif %}
   </div>
 {% endfor %}
 
@@ -21,10 +27,5 @@
   <button type="submit">Add Comment</button>
 </form>
 
-{% if user.is_authenticated %}
-  {% if comment.user == user %}
-    <a href="{% url 'edit_comment' comment.id %}">Edit</a>
-    <a href="{% url 'delete_comment' comment.id %}">Delete</a>
-  {% endif %}
-{% endif %}
+
 {% endblock %}

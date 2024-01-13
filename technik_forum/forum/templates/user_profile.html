@@ -1,10 +1,33 @@
 {% extends 'base_generic.html' %}
 
 {% block content %}
-  <h2>User Profile</h2>
-  <form method="post" action="{% url 'user_profile' %}">
+  <h1>User Profile</h1>
+
+  <p>Name: {{ user.username }}</p>
+  <p>Email: {{ user_info.email }}</p>
+
+  <h2>Erstellte Threads</h2>
+  {% if user_info.threads %}
+    <ul>
+      {% for thread in user_info.threads %}
+        <li>
+          <a href="{% url 'thread_detail' thread.id %}">
+            <p>{{ thread.title }} - Created on: {{ thread.created_at }}</p>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Du hast noch keine Frage gestellt.</p>
+  {% endif %}
+
+  <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save Profile</button>
   </form>
 {% endblock %}
+
+
+
+

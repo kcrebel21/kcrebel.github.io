@@ -1,33 +1,61 @@
 {% load static %}
-{% load bootstrap4 %}
 
 <!DOCTYPE html>
 <html>
 <head>
-  <title>{% block title %}Forum{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seniorenhilfe</title>
   <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-  {% load bootstrap4 %}
-  {% bootstrap_css %}
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZwT" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+  
 </head>
 <body>
 
-  <div class="navbar">
-    <a href="{% url 'home' %}">Home</a>
-    <a href="{% url 'thread_list' %}">Forum</a>
-    <a href="{% url 'new_thread' %}">Neue Frage</a>
-    <a href="{% url 'user_profile' %}">Profil</a>
-    {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>
-    {% else %}
-        <a href="{% url 'account_login' %}">Login</a>
-        <a href="{% url 'account_signup' %}">Signup</a>
-    {% endif %}
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav list-unstyled">
+          <li class="nav-item active">
+              <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'thread_list' %}">Forum</a>
+          </li>
+          {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'new_thread' %}">Neue Frage ({{ user.username }})</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'user_profile' %}">Profile ({{ user.username }})</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+              </li>
+          {% else %}
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'login' %}">Login</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'signup' %}">Registrieren</a>
+              </li>
+          {% endif %}
+      </ul>
+  </div>
+</nav>
+
+<!-- Content -->
+<div class="container mt-4">
+  {% block content %}{% endblock %}
 </div>
 
-<main>
-    <!-- Der Hauptbereich deiner Seite -->
-    {% block content %}{% endblock %}
-</main>
-  
+<!-- Footer -->
+<footer>
+  <p>&copy; 2023 Alkpreischeck24. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
