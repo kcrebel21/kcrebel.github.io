@@ -24,13 +24,16 @@
   </div>
 {% endfor %}
 
-<!-- Füge am Ende des Templates hinzu -->
-<h3>Add Comment</h3>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Add Comment</button>
-</form>
 
+
+{% if user.is_authenticated %}
+    <!-- Füge am Ende des Templates hinzu -->
+  <h3>Add Comment</h3>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add Comment</button>
+  </form>
+{% endif %}
 
 {% endblock %}

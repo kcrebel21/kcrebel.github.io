@@ -80,7 +80,7 @@ def thread_detail(request, thread_id):
         form = CommentForm()
 
     return render(request, 'forum/thread_detail.html', {'thread': thread, 'comments': comments, 'form': form})
-
+@login_required
 def edit_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id, user=request.user)
 
@@ -96,7 +96,7 @@ def edit_comment(request, comment_id):
     return render(request, 'forum/edit_comment.html', {'form': form})
 
 
-
+@login_required
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id, user=request.user)
     thread_id = comment.thread.id
@@ -107,7 +107,7 @@ def delete_comment(request, comment_id):
         return redirect('thread_detail', thread_id=thread_id)
 
     return render(request, 'forum/delete_comment.html', {'comment': comment})
-
+@login_required
 def delete_thread(request, thread_id):
     thread = get_object_or_404(Thread, id=thread_id, user=request.user)
 
@@ -119,7 +119,7 @@ def delete_thread(request, thread_id):
     return render(request, 'forum/delete_thread.html', {'thread': thread})
 
 
-
+@login_required
 def new_thread(request):
     if request.method == 'POST':
         form = ThreadForm(request.POST)
